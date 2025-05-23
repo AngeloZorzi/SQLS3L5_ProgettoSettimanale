@@ -13,12 +13,10 @@ public class Main {
     private static Archive archive;
 
     public static void main(String[] args) {
-
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("library");
         EntityManager em = emf.createEntityManager();
 
         archive = new Archive(em);
-
         Scanner scanner = new Scanner(System.in);
         boolean exit = false;
 
@@ -69,35 +67,28 @@ public class Main {
     }
 
     private static void addBook(Scanner scanner) {
-        System.out.println("Enter Book ISBN:");
-        String isbn = scanner.nextLine();
-        System.out.println("Enter Title:");
-        String title = scanner.nextLine();
-        System.out.println("Enter Year:");
-        int year = Integer.parseInt(scanner.nextLine());
-        System.out.println("Enter Pages:");
-        int pages = Integer.parseInt(scanner.nextLine());
-        System.out.println("Enter Author:");
-        String author = scanner.nextLine();
-        System.out.println("Enter Genre:");
-        String genre = scanner.nextLine();
+        String isbn = readLine(scanner, "Enter Book ISBN:");
+        String title = readLine(scanner, "Enter Title:");
+        int year = readInt(scanner, "Enter Year:");
+        int pages = readInt(scanner, "Enter Pages:");
+        String author = readLine(scanner, "Enter Author:");
+        String genre = readLine(scanner, "Enter Genre:");
 
         Book book = new Book(isbn, title, year, pages, author, genre);
-        archive.addElement(book);
-        System.out.println("Book added successfully.");
+        try {
+            archive.addElement(book);
+            System.out.println("Book added successfully.");
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private static void addMagazine(Scanner scanner) {
-        System.out.println("Enter Magazine ISBN:");
-        String isbn = scanner.nextLine();
-        System.out.println("Enter Title:");
-        String title = scanner.nextLine();
-        System.out.println("Enter Year:");
-        int year = Integer.parseInt(scanner.nextLine());
-        System.out.println("Enter Pages:");
-        int pages = Integer.parseInt(scanner.nextLine());
-        System.out.println("Enter Periodicity (SETTIMANALE, MENSILE, SEMESTRALE):");
-        String periodicityStr = scanner.nextLine().toUpperCase();
+        String isbn = readLine(scanner, "Enter Magazine ISBN:");
+        String title = readLine(scanner, "Enter Title:");
+        int year = readInt(scanner, "Enter Year:");
+        int pages = readInt(scanner, "Enter Pages:");
+        String periodicityStr = readLine(scanner, "Enter Periodicity (SETTIMANALE, MENSILE, SEMESTRALE):").toUpperCase();
 
         Periodicity periodicity;
         try {
@@ -108,20 +99,22 @@ public class Main {
         }
 
         Magazine magazine = new Magazine(isbn, title, year, pages, periodicity);
-        archive.addElement(magazine);
-        System.out.println("Magazine added successfully.");
+        try {
+            archive.addElement(magazine);
+            System.out.println("Magazine added successfully.");
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private static void removeElement(Scanner scanner) {
-        System.out.println("Enter ISBN of the Element to remove:");
-        String isbn = scanner.nextLine();
-        archive.removeElementByISBN(isbn);
-        System.out.println("Element removed if existed.");
+        String isbn = readLine(scanner, "Enter ISBN of the Element to remove:");
+        boolean removed = archive.removeElementByISBN(isbn);
+        System.out.println(removed ? "Element removed." : "Element not found.");
     }
 
     private static void searchElementByISBN(Scanner scanner) {
-        System.out.println("Enter ISBN to search:");
-        String isbn = scanner.nextLine();
+        String isbn = readLine(scanner, "Enter ISBN to search:");
         Element element = archive.searchByISBN(isbn);
         if (element != null) {
             System.out.println("Found: " + element);
@@ -131,8 +124,7 @@ public class Main {
     }
 
     private static void searchElementsByYear(Scanner scanner) {
-        System.out.println("Enter Year to search:");
-        int year = Integer.parseInt(scanner.nextLine());
+        int year = readInt(scanner, "Enter Year to search:");
         List<Element> elements = archive.searchByYear(year);
         if (elements.isEmpty()) {
             System.out.println("No elements found for that year.");
@@ -142,8 +134,7 @@ public class Main {
     }
 
     private static void searchElementsByTitle(Scanner scanner) {
-        System.out.println("Enter partial Title to search:");
-        String title = scanner.nextLine();
+        String title = readLine(scanner, "Enter partial Title to search:");
         List<Element> elements = archive.searchByTitle(title);
         if (elements.isEmpty()) {
             System.out.println("No elements found matching the title.");
@@ -153,8 +144,7 @@ public class Main {
     }
 
     private static void searchBooksByAuthor(Scanner scanner) {
-        System.out.println("Enter Author to search:");
-        String author = scanner.nextLine();
+        String author = readLine(scanner, "Enter Author to search:");
         List<Element> books = archive.searchByAuthor(author);
         if (books.isEmpty()) {
             System.out.println("No books found by that author.");
@@ -164,23 +154,22 @@ public class Main {
     }
 
     private static void addUser(Scanner scanner) {
-        System.out.println("Enter First Name:");
-        String firstName = scanner.nextLine();
-        System.out.println("Enter Last Name:");
-        String lastName = scanner.nextLine();
-        System.out.println("Enter Birthdate (YYYY-MM-DD):");
-        LocalDate birthDate = LocalDate.parse(scanner.nextLine());
-        System.out.println("Enter Card Number:");
-        String cardNumber = scanner.nextLine();
+        String firstName = readLine(scanner, "Enter First Name:");
+        String lastName = readLine(scanner, "Enter Last Name:");
+        LocalDate birthDate = readDate(scanner, "Enter Birthdate (YYYY-MM-DD):");
+        String cardNumber = readLine(scanner, "Enter Card Number:");
 
         User user = new User(firstName, lastName, birthDate, cardNumber);
-        archive.addUser(user);
-        System.out.println("User added successfully.");
+        try {
+            archive.addUser(user);
+            System.out.println("User added successfully.");
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private static void searchUserByCardNumber(Scanner scanner) {
-        System.out.println("Enter Card Number to search:");
-        String cardNumber = scanner.nextLine();
+        String cardNumber = readLine(scanner, "Enter Card Number to search:");
         User user = archive.getUserByCardNumber(cardNumber);
         if (user != null) {
             System.out.println("Found: " + user);
@@ -190,16 +179,14 @@ public class Main {
     }
 
     private static void registerLoan(Scanner scanner) {
-        System.out.println("Enter User Card Number:");
-        String cardNumber = scanner.nextLine();
+        String cardNumber = readLine(scanner, "Enter User Card Number:");
         User user = archive.getUserByCardNumber(cardNumber);
         if (user == null) {
             System.out.println("User not found.");
             return;
         }
 
-        System.out.println("Enter ISBN of the Element to loan:");
-        String isbn = scanner.nextLine();
+        String isbn = readLine(scanner, "Enter ISBN of the Element to loan:");
         Element item = archive.searchByISBN(isbn);
         if (item == null) {
             System.out.println("Element not found.");
@@ -212,8 +199,7 @@ public class Main {
     }
 
     private static void listLoansByUser(Scanner scanner) {
-        System.out.println("Enter User Card Number:");
-        String cardNumber = scanner.nextLine();
+        String cardNumber = readLine(scanner, "Enter User Card Number:");
         List<Loan> loans = archive.getLoansByUserCard(cardNumber);
         if (loans.isEmpty()) {
             System.out.println("No loans found for that user.");
@@ -229,5 +215,34 @@ public class Main {
         } else {
             loans.forEach(System.out::println);
         }
+    }
+
+
+
+    private static int readInt(Scanner scanner, String message) {
+        while (true) {
+            try {
+                System.out.println(message);
+                return Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid number. Try again.");
+            }
+        }
+    }
+
+    private static LocalDate readDate(Scanner scanner, String message) {
+        while (true) {
+            try {
+                System.out.println(message);
+                return LocalDate.parse(scanner.nextLine());
+            } catch (Exception e) {
+                System.out.println("Invalid date format. Use YYYY-MM-DD.");
+            }
+        }
+    }
+
+    private static String readLine(Scanner scanner, String message) {
+        System.out.println(message);
+        return scanner.nextLine();
     }
 }

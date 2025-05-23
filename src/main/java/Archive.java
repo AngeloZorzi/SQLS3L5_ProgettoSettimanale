@@ -26,8 +26,13 @@ public class Archive {
         elementDAO.save(element);
     }
 
-    public void removeElementByISBN(String isbn) {
-        elementDAO.delete(isbn);
+    public boolean removeElementByISBN(String isbn) {
+        Element element = elementDAO.findByISBN(isbn);
+        if (element != null) {
+            elementDAO.delete(isbn);
+            return true;
+        }
+        return false;
     }
 
     public Element searchByISBN(String isbn) {

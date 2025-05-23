@@ -38,4 +38,4 @@ build/
 .DS_Store
 
 
-src/main/java/META-INF/persistence.xml
+src/main/java/resources/META-INF/persistence.xml

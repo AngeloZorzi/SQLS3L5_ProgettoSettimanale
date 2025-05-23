@@ -18,7 +18,7 @@ public class User {
     @Column(unique = true, nullable = false)
     private String cardNumber;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user")
     private Set<Loan> loans = new HashSet<>();
 
     public User() {}

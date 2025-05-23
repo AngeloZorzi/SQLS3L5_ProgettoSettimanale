@@ -27,7 +27,12 @@ public class UserDAO {
     }
 
     public User findByCardNumber(String cardNumber) {
-        return em.find(User.class, cardNumber);
+        TypedQuery<User> query = em.createQuery(
+                "SELECT u FROM User u WHERE u.cardNumber = :cardNumber", User.class
+        );
+        query.setParameter("cardNumber", cardNumber);
+        List<User> results = query.getResultList();
+        return results.isEmpty() ? null : results.get(0);
     }
 
     public List<User> findAll() {

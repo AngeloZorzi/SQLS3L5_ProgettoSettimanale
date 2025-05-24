@@ -37,7 +37,7 @@ public class Main {
                 case "9" -> searchUserByCardNumber(scanner);
                 case "10" -> registerLoan(scanner);
                 case "11" -> listLoansByUser(scanner);
-                case "12" -> listOverdueLoans();
+                case "12" -> listOverdueLoansByUser(scanner);
                 case "0" -> exit = true;
                 default -> System.out.println("Invalid option. Try again.");
             }
@@ -208,12 +208,28 @@ public class Main {
         }
     }
 
-    private static void listOverdueLoans() {
-        List<Loan> loans = archive.getExpiredAndNotReturnedLoans();
-        if (loans.isEmpty()) {
-            System.out.println("No overdue loans found.");
+    private static void listOverdueLoansByUser(Scanner scanner) {
+        String cardNumber = readLine(scanner, "Enter User Card Number:");
+        User user = archive.getUserByCardNumber(cardNumber);
+
+        if (user == null) {
+            System.out.println("User not found.");
+        } else if (user.getLoans() == null || user.getLoans().isEmpty()) {
+            System.out.println("This user has no loans.");
         } else {
-            loans.forEach(System.out::println);
+            boolean hasOverdue = false;
+            LocalDate today = LocalDate.now();
+
+            for (Loan loan : user.getLoans()) {
+                if (loan.getReturnDate() == null && loan.getReturnDueDate().isBefore(today)) {
+                    System.out.println("Overdue loan: " + loan);
+                    hasOverdue = true;
+                }
+            }
+
+            if (!hasOverdue) {
+                System.out.println("This user has no overdue loans.");
+            }
         }
     }
 

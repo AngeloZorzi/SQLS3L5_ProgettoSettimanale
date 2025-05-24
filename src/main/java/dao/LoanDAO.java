@@ -29,7 +29,7 @@ public class LoanDAO {
 
     public List<Loan> findByUserCardNumber(String cardNumber) {
         TypedQuery<Loan> query = em.createQuery(
-                "SELECT l FROM Loan l WHERE l.user.cardNumber = :cardNumber AND l.actualReturnDate IS NULL",
+                "SELECT l FROM Loan l WHERE l.user.cardNumber = :cardNumber AND l.returnDate IS NULL",
                 Loan.class
         );
         query.setParameter("cardNumber", cardNumber);
@@ -38,7 +38,7 @@ public class LoanDAO {
 
     public List<Loan> findOverdueLoans() {
         TypedQuery<Loan> query = em.createQuery(
-                "SELECT l FROM Loan l WHERE l.expectedReturnDate < :today AND l.actualReturnDate IS NULL",
+                "SELECT l FROM Loan l WHERE l.returnDueDate < :today AND l.returnDate IS NULL",
                 Loan.class
         );
         query.setParameter("today", LocalDate.now());

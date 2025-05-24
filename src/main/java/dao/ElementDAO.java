@@ -14,6 +14,10 @@ public class ElementDAO {
         this.em = em;
     }
     public void save(Element element) {
+        if (findByISBN(element.getISBN()) != null) {
+            throw new IllegalArgumentException("An element with this ISBN already exists.");
+        }
+
         EntityTransaction tx = em.getTransaction();
         tx.begin();
         em.persist(element);
